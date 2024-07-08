@@ -1,0 +1,51 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Invite {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  inviteId  String?
+  inviter   String?
+  invitee   String?
+}
+
+model DiscordUser {
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  userId        String?
+  username      String?
+  role          Role?          @relation(fields: [roleId], references: [id])
+  roleId        String?
+  subscriptions Subscription[]
+}
+
+model Role {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  roleId       String?
+  name         String?
+  discordUsers DiscordUser[]
+}
+
+model Subscription {
+  id             String                @id @default(cuid())
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  subscriptionId String?
+  tier           EnumSubscriptionTier?
+  discordUser    DiscordUser?          @relation(fields: [discordUserId], references: [id])
+  discordUserId  String?
+}
+
+enum EnumSubscriptionTier {
+  Option1
+}
